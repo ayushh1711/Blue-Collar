@@ -1,0 +1,15 @@
+== START BACKEND (Terminal 1) ==
+cd server
+npm run dev
+
+== START FRONTEND (Terminal 2) ==
+cd client
+npm run dev
+
+== ACCESS FROM OTHER DEVICES ON SAME WIFI ==
+Frontend:  http://10.60.233.189:5173
+Backend:   http://10.60.233.189:5000
+
+NOTE: All devices must be on the same Wi-Fi network.
+      If IP changes, run this in PowerShell to find new IP:
+      Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.InterfaceAlias -eq "Wi-Fi" }

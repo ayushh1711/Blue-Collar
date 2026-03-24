@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Review System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        .step {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Review System Test</h1>
+
+    <div class="test-result info">
+        <h3>Test Overview:</h3>
+        <p>This test verifies the complete review system flow:</p>
+        <ol>
+            <li>Customer completes a booking</li>
+            <li>Customer writes a review</li>
+            <li>Review appears in provider's work history</li>
+            <li>Provider rating is updated</li>
+        </ol>
+    </div>
+
+    <div class="step">
+        <h3>Step 1: Login as Customer</h3>
+        <button onclick="loginCustomer()">Login Customer</button>
+        <div id="customer-result"></div>
+    </div>
+
+    <div class="step">
+        <h3>Step 2: Check Customer Bookings</h3>
+        <button onclick="getCustomerBookings()">Get Customer Bookings</button>
+        <div id="customer-bookings-result"></div>
+    </div>
+
+    <div class="step">
+        <h3>Step 3: Submit Review</h3>
+        <button onclick="submitReview()">Submit Test Review</button>
+        <div id="review-result"></div>
+    </div>
+
+    <div class="step">
+        <h3>Step 4: Login as Provider</h3>
+        <button onclick="loginProvider()">Login Provider</button>
+        <div id="provider-result"></div>
+    </div>
+
+    <div class="step">
+        <h3>Step 5: Check Provider Work History</h3>
+        <button onclick="getProviderBookings()">Get Provider Work History</button>
+        <div id="provider-bookings-result"></div>
+    </div>
+
+    <div class="step">
+        <h3>Step 6: Test Frontend</h3>
+        <button onclick="openCustomerDashboard()">Open Customer Dashboard</button>
+        <button onclick="openProviderDashboard()">Open Provider Dashboard</button>
+    </div>
+
+    <script>
+        let customerToken = '';
+        let providerToken = '';
+        let completedBookingId = '';
+
+        async function loginCustomer() {
+            const resultDiv = document.getElementById('customer-result');
+
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'customer@test.com',
+                        password: 'password123'
+                    }),
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    customerToken = data.token;
+                    resultDiv.innerHTML = `
+                        <div class="test-result success">
+                            <h4>✅ Customer Login Successful</h4>
+                            <p><strong>Customer:</strong> ${data.user.name}</p>
+                        </div>
+                    `;
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="test-result error">
+                        <h4>❌ Customer Login Failed</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function getCustomerBookings() {
+            const resultDiv = document.getElementById('customer-bookings-result');
+
+            if (!customerToken) {
+                resultDiv.innerHTML = '<div class="test-result error">Please login as customer first</div>';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:5000/api/bookings', {
+                    headers: { 'Authorization': `Bearer ${customerToken}` },
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const completedBookings = data.bookings.filter(b => b.status === 'COMPLETED');
+                    const bookingsWithoutReview = completedBookings.filter(b => !b.review);
+
+                    if (bookingsWithoutReview.length > 0) {
+                        completedBookingId = bookingsWithoutReview[0].id;
+                    }
+
+                    resultDiv.innerHTML = `
+                        <div class="test-result success">
+                            <h4>✅ Customer Bookings Retrieved</h4>
+                            <p><strong>Total Bookings:</strong> ${data.bookings.length}</p>
+                            <p><strong>Completed:</strong> ${completedBookings.length}</p>
+                            <p><strong>Without Review:</strong> ${bookingsWithoutReview.length}</p>
+                            <pre>${JSON.stringify(completedBookings, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="test-result error">
+                        <h4>❌ Failed to get bookings</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function submitReview() {
+            const resultDiv = document.getElementById('review-result');
+
+            if (!customerToken || !completedBookingId) {
+                resultDiv.innerHTML = '<div class="test-result error">Please get customer bookings first to find a completed booking</div>';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:5000/api/reviews', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${customerToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        bookingId: completedBookingId,
+                        rating: 5,
+                        comment: 'Excellent service! Very professional and completed the work perfectly.'
+                    }),
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="test-result success">
+                            <h4>✅ Review Submitted Successfully</h4>
+                            <p><strong>Rating:</strong> 5 stars</p>
+                            <p><strong>Comment:</strong> Excellent service! Very professional and completed the work perfectly.</p>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="test-result error">
+                        <h4>❌ Review Submission Failed</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function loginProvider() {
+            const resultDiv = document.getElementById('provider-result');
+
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'provider@test.com',
+                        password: 'password123'
+                    }),
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    providerToken = data.token;
+                    resultDiv.innerHTML = `
+                        <div class="test-result success">
+                            <h4>✅ Provider Login Successful</h4>
+                            <p><strong>Provider:</strong> ${data.user.name}</p>
+                            <p><strong>Rating:</strong> ${data.user.providerProfile?.rating || 'N/A'}</p>
+                            <p><strong>Total Reviews:</strong> ${data.user.providerProfile?.totalReviews || 0}</p>
+                        </div>
+                    `;
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="test-result error">
+                        <h4>❌ Provider Login Failed</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function getProviderBookings() {
+            const resultDiv = document.getElementById('provider-bookings-result');
+
+            if (!providerToken) {
+                resultDiv.innerHTML = '<div class="test-result error">Please login as provider first</div>';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:5000/api/bookings', {
+                    headers: { 'Authorization': `Bearer ${providerToken}` },
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const completedBookings = data.bookings.filter(b =>
+                        b.status === 'COMPLETED' || b.status === 'CANCELLED'
+                    );
+                    const bookingsWithReviews = completedBookings.filter(b => b.review);
+
+                    resultDiv.innerHTML = `
+                        <div class="test-result success">
+                            <h4>✅ Provider Work History Retrieved</h4>
+                            <p><strong>Total Bookings:</strong> ${data.bookings.length}</p>
+                            <p><strong>Completed/Cancelled:</strong> ${completedBookings.length}</p>
+                            <p><strong>With Reviews:</strong> ${bookingsWithReviews.length}</p>
+                            <h5>Work History with Reviews:</h5>
+                            <pre>${JSON.stringify(completedBookings, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="test-result error">
+                        <h4>❌ Failed to get provider bookings</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function openCustomerDashboard() {
+            window.open('http://localhost:5173/customer/dashboard', '_blank');
+        }
+
+        function openProviderDashboard() {
+            window.open('http://localhost:5173/provider/dashboard', '_blank');
+        }
+
+        // Auto-run basic setup
+        window.onload = function () {
+            document.body.insertAdjacentHTML('afterbegin', `
+                <div class="test-result info">
+                    <h3>🔄 Review System Test Ready</h3>
+                    <p>Follow the steps in order to test the complete review flow</p>
+                    <p><strong>Test Accounts:</strong></p>
+                    <ul>
+                        <li>Customer: customer@test.com / password123</li>
+                        <li>Provider: provider@test.com / password123</li>
+                    </ul>
+                </div>
+            `);
+        };
+    </script>
+</body>
+
+</html>
