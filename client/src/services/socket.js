@@ -1,8 +1,10 @@
 import { io } from 'socket.io-client';
 
-// Always connect via the same host that served the page
-// This works for both localhost and other devices on the LAN
-export const socket = io('/', {
+// In production: connect directly to Railway backend URL
+// In development: connect via Vite proxy (same origin)
+const SOCKET_URL = import.meta.env.VITE_API_URL || '/';
+
+export const socket = io(SOCKET_URL, {
   withCredentials: true,
   autoConnect: false
 });
