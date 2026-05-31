@@ -1,197 +1,145 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import { Mail, Lock, User, Phone, Briefcase, DollarSign, Award } from 'lucide-react';
-import Navbar from '../components/common/Navbar';
-import Input from '../components/common/Input';
-import Button from '../components/common/Button';
-import Card from '../components/common/Card';
+import { Wrench } from 'lucide-react';
 
 const Signup = () => {
   const [role, setRole] = useState('CUSTOMER');
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    phone: '',
-    skills: '',
-    hourlyRate: '',
-    experience: ''
+    name: '', email: '', password: '', phone: '',
+    skills: '', hourlyRate: '', experience: ''
   });
   const [error, setError] = useState('');
   const { signup, loading } = useAuthStore();
   const navigate = useNavigate();
 
+  const set = (field) => (e) => setFormData({ ...formData, [field]: e.target.value });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
     try {
       const userData = {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        phone: formData.phone,
-        role
+        name: formData.name, email: formData.email,
+        password: formData.password, phone: formData.phone, role
       };
-
       if (role === 'PROVIDER') {
         userData.providerData = {
-          skills: formData.skills.split(',').map(s => s.trim()).filter(s => s),
+          skills: formData.skills.split(',').map(s => s.trim()).filter(Boolean),
           hourlyRate: parseFloat(formData.hourlyRate),
           experience: parseInt(formData.experience)
         };
       }
-
       const data = await signup(userData);
-      const userRole = data.user.role.toLowerCase();
-      navigate(`/${userRole}/dashboard`);
+      navigate(`/${data.user.role.toLowerCase()}/dashboard`);
     } catch (err) {
-      setError(err.response?.data?.message || 'Signup failed');
+      setError(err.response?.data?.message || 'Signup failed. Please try again.');
     }
   };
 
+  const inputClass = "w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition";
+  const labelClass = "block text-sm font-medium text-gray-700 mb-1.5";
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50">
-      <Navbar />
-      <div className="flex items-center justify-center py-12 px-4">
-        <div className="w-full max-w-md animate-scale-in">
-          <Card className="shadow-2xl border-0">
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary-500 to-accent-500 rounded-2xl mb-4 shadow-lg shadow-primary-500/30">
-                <User className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
-                Create Account
-              </h2>
-              <p className="text-gray-600 mt-2">Join our platform today</p>
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 px-4">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        {/* Logo */}
+        <div className="flex justify-center mb-6">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-brand-600 rounded-xl flex items-center justify-center">
+              <Wrench className="w-5 h-5 text-white" />
             </div>
-            
-            <div className="flex gap-3 mb-6">
-              <Button
+            <span className="text-xl font-bold text-gray-900">BlueCollar</span>
+          </Link>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-card px-8 py-10">
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">Create an account</h1>
+          <p className="text-sm text-gray-500 mb-6">Join BlueCollar today.</p>
+
+          {/* Role toggle */}
+          <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
+            {['CUSTOMER', 'PROVIDER'].map((r) => (
+              <button
+                key={r}
                 type="button"
-                variant={role === 'CUSTOMER' ? 'primary' : 'outline'}
-                className="flex-1"
-                onClick={() => setRole('CUSTOMER')}
+                onClick={() => setRole(r)}
+                className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${
+                  role === r
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
               >
-                Customer
-              </Button>
-              <Button
-                type="button"
-                variant={role === 'PROVIDER' ? 'primary' : 'outline'}
-                className="flex-1"
-                onClick={() => setRole('PROVIDER')}
-              >
-                Provider
-              </Button>
+                {r === 'CUSTOMER' ? 'I need services' : 'I provide services'}
+              </button>
+            ))}
+          </div>
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg mb-5">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className={labelClass}>Full name</label>
+              <input type="text" value={formData.name} onChange={set('name')} placeholder="John Doe" required className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Email</label>
+              <input type="email" value={formData.email} onChange={set('email')} placeholder="you@example.com" required className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Phone number</label>
+              <input type="tel" value={formData.phone} onChange={set('phone')} placeholder="98765 43210" required className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Password</label>
+              <input type="password" value={formData.password} onChange={set('password')} placeholder="Min. 8 characters" required className={inputClass} />
             </div>
 
-            {error && (
-              <div className="bg-red-50 border-2 border-red-200 text-red-700 p-4 rounded-xl mb-6 animate-slide-down">
-                <p className="flex items-center">
-                  <span className="mr-2">⚠️</span>
-                  {error}
-                </p>
+            {role === 'PROVIDER' && (
+              <div className="pt-2 border-t border-gray-100 space-y-4">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Professional details</p>
+                <div>
+                  <label className={labelClass}>Skills <span className="text-gray-400 font-normal">(comma separated)</span></label>
+                  <input type="text" value={formData.skills} onChange={set('skills')} placeholder="Plumbing, Electrical" required className={inputClass} />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className={labelClass}>Hourly rate (₹)</label>
+                    <input type="number" value={formData.hourlyRate} onChange={set('hourlyRate')} placeholder="500" required className={inputClass} />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Experience (yrs)</label>
+                    <input type="number" value={formData.experience} onChange={set('experience')} placeholder="3" required className={inputClass} />
+                  </div>
+                </div>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <Input
-                label="Full Name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                icon={<User className="w-5 h-5" />}
-                placeholder="John Doe"
-                required
-              />
-              
-              <Input
-                label="Email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                icon={<Mail className="w-5 h-5" />}
-                placeholder="you@example.com"
-                required
-              />
-              
-              <Input
-                label="Phone"
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                icon={<Phone className="w-5 h-5" />}
-                placeholder="+91 98765 43210"
-                required
-              />
-              
-              <Input
-                label="Password"
-                type="password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                icon={<Lock className="w-5 h-5" />}
-                placeholder="••••••••"
-                required
-              />
-
-              {role === 'PROVIDER' && (
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-brand-600 text-white font-semibold py-2.5 rounded-lg hover:bg-brand-700 transition-colors text-sm disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+            >
+              {loading ? (
                 <>
-                  <Input
-                    label="Skills"
-                    value={formData.skills}
-                    onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
-                    icon={<Briefcase className="w-5 h-5" />}
-                    placeholder="Plumbing, Electrical, Carpentry"
-                    required
-                  />
-                  
-                  <Input
-                    label="Hourly Rate (₹)"
-                    type="number"
-                    value={formData.hourlyRate}
-                    onChange={(e) => setFormData({ ...formData, hourlyRate: e.target.value })}
-                    icon={<DollarSign className="w-5 h-5" />}
-                    placeholder="500"
-                    required
-                  />
-                  
-                  <Input
-                    label="Years of Experience"
-                    type="number"
-                    value={formData.experience}
-                    onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
-                    icon={<Award className="w-5 h-5" />}
-                    placeholder="5"
-                    required
-                  />
+                  <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Creating account...
                 </>
-              )}
+              ) : 'Create account'}
+            </button>
+          </form>
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? (
-                  <span className="flex items-center justify-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Creating account...
-                  </span>
-                ) : (
-                  'Create Account'
-                )}
-              </Button>
-            </form>
-
-            <div className="mt-6 text-center">
-              <p className="text-gray-600">
-                Already have an account?{' '}
-                <Link to="/login" className="text-primary-600 hover:text-primary-700 font-semibold hover:underline">
-                  Sign in
-                </Link>
-              </p>
-            </div>
-          </Card>
+          <p className="mt-6 text-center text-sm text-gray-500">
+            Already have an account?{' '}
+            <Link to="/login" className="text-brand-600 font-semibold hover:text-brand-700">Sign in</Link>
+          </p>
         </div>
       </div>
     </div>

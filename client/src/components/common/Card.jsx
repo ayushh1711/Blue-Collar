@@ -1,10 +1,6 @@
-const Card = ({ children, className = '', hover = false, gradient = false }) => {
-  const baseStyles = 'bg-white rounded-2xl shadow-card p-6 border border-gray-100';
-  const hoverStyles = hover ? 'hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300 cursor-pointer' : '';
-  const gradientStyles = gradient ? 'bg-gradient-to-br from-white to-primary-50/30' : '';
-  
+const Card = ({ children, className = '', hover = false }) => {
   return (
-    <div className={`${baseStyles} ${hoverStyles} ${gradientStyles} ${className}`}>
+    <div className={`bg-white rounded-xl border border-gray-200 p-5 ${hover ? 'hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer' : 'shadow-card'} ${className}`}>
       {children}
     </div>
   );

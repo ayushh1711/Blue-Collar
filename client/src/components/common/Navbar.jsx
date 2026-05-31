@@ -1,84 +1,111 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import { Home, LogOut, User, Sparkles } from 'lucide-react';
-import Button from './Button';
+import { Wrench, LogOut, LayoutDashboard, List } from 'lucide-react';
 
 const Navbar = () => {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     await logout();
     navigate('/');
   };
 
+  const isActive = (path) => location.pathname === path;
+
   return (
-    <nav className="bg-white/80 backdrop-blur-lg border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <Link to="/" className="flex items-center space-x-2 group">
-            <div className="relative">
-              <Sparkles className="w-7 h-7 text-primary-600 group-hover:text-primary-700 transition-colors" />
-              <div className="absolute inset-0 bg-primary-400 blur-lg opacity-0 group-hover:opacity-30 transition-opacity"></div>
+        <div className="flex items-center justify-between h-16">
+
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center">
+              <Wrench className="w-4 h-4 text-white" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
-              BlueCollar
-            </span>
+            <span className="text-lg font-bold text-gray-900">BlueCollar</span>
           </Link>
 
-          <div className="flex items-center space-x-6">
+          {/* Nav links */}
+          <div className="hidden md:flex items-center gap-6">
+            {!user && (
+              <Link
+                to="/services"
+                className={`text-sm font-medium transition-colors ${isActive('/services') ? 'text-brand-600' : 'text-gray-600 hover:text-gray-900'}`}
+              >
+                Services
+              </Link>
+            )}
+            {user?.role === 'CUSTOMER' && (
+              <>
+                <Link
+                  to="/services"
+                  className={`text-sm font-medium transition-colors ${isActive('/services') ? 'text-brand-600' : 'text-gray-600 hover:text-gray-900'}`}
+                >
+                  Services
+                </Link>
+                <Link
+                  to="/customer/dashboard"
+                  className={`text-sm font-medium transition-colors ${isActive('/customer/dashboard') ? 'text-brand-600' : 'text-gray-600 hover:text-gray-900'}`}
+                >
+                  My Bookings
+                </Link>
+              </>
+            )}
+            {user?.role === 'PROVIDER' && (
+              <Link
+                to="/provider/dashboard"
+                className={`text-sm font-medium transition-colors ${isActive('/provider/dashboard') ? 'text-brand-600' : 'text-gray-600 hover:text-gray-900'}`}
+              >
+                Dashboard
+              </Link>
+            )}
+            {user?.role === 'ADMIN' && (
+              <Link
+                to="/admin/dashboard"
+                className={`text-sm font-medium transition-colors ${isActive('/admin/dashboard') ? 'text-brand-600' : 'text-gray-600 hover:text-gray-900'}`}
+              >
+                Admin
+              </Link>
+            )}
+          </div>
+
+          {/* Right side */}
+          <div className="flex items-center gap-3">
             {user ? (
               <>
-                {user.role === 'CUSTOMER' && (
-                  <Link 
-                    to="/services" 
-                    className="text-gray-700 hover:text-primary-600 font-medium transition-colors relative group"
-                  >
-                    Services
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-600 group-hover:w-full transition-all duration-300"></span>
-                  </Link>
-                )}
-                <Link 
-                  to={`/${user.role.toLowerCase()}/dashboard`}
-                  className="text-gray-700 hover:text-primary-600 font-medium transition-colors relative group"
-                >
-                  Dashboard
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-600 group-hover:w-full transition-all duration-300"></span>
-                </Link>
-                <div className="flex items-center space-x-2 px-3 py-1.5 bg-gradient-to-r from-primary-50 to-accent-50 rounded-full">
-                  <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" />
+                <div className="hidden sm:flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center">
+                    <span className="text-sm font-semibold text-brand-700">
+                      {user.name.charAt(0).toUpperCase()}
+                    </span>
                   </div>
-                  <span className="text-gray-700 font-medium">{user.name}</span>
+                  <span className="text-sm font-medium text-gray-700">{user.name}</span>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
+                <button
                   onClick={handleLogout}
-                  className="flex items-center space-x-1"
+                  className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
-                  <span>Logout</span>
-                </Button>
+                  <span className="hidden sm:inline">Logout</span>
+                </button>
               </>
             ) : (
               <>
-                <Link 
-                  to="/services" 
-                  className="text-gray-700 hover:text-primary-600 font-medium transition-colors relative group"
+                <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                  Log in
+                </Link>
+                <Link
+                  to="/signup"
+                  className="bg-brand-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-brand-700 transition-colors"
                 >
-                  Services
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-600 group-hover:w-full transition-all duration-300"></span>
-                </Link>
-                <Link to="/login">
-                  <Button variant="outline" size="sm">Login</Button>
-                </Link>
-                <Link to="/signup">
-                  <Button size="sm" className="shadow-lg shadow-primary-500/30">Sign Up</Button>
+                  Sign up
                 </Link>
               </>
             )}
           </div>
+
         </div>
       </div>
     </nav>
