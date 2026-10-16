@@ -1,8 +1,8 @@
 import { io } from 'socket.io-client';
 
-// In production: connect directly to Railway backend URL
+// In production: connect directly to backend URL
 // In development: connect via Vite proxy (same origin)
-const SOCKET_URL = import.meta.env.VITE_API_URL || '/';
+const SOCKET_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/+$/, '') : '/';
 
 export const socket = io(SOCKET_URL, {
   withCredentials: true,

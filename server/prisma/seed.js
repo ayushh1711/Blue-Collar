@@ -121,26 +121,29 @@ async function main() {
     }
   ];
 
-  for (const booking of completedBookings) {
-    await prisma.booking.create({
-      data: booking
-    });
-  }
+  const existingBookings = await prisma.booking.count();
+  if (existingBookings === 0) {
+    for (const booking of completedBookings) {
+      await prisma.booking.create({
+        data: booking
+      });
+    }
 
-  // Create reviews for completed bookings
-  const completedBookingRecords = await prisma.booking.findMany({
-    where: { status: 'COMPLETED' }
-  });
-
-  for (const booking of completedBookingRecords) {
-    await prisma.review.create({
-      data: {
-        bookingId: booking.id,
-        customerId: booking.customerId,
-        rating: Math.floor(Math.random() * 2) + 4, // 4 or 5 stars
-        comment: 'Great service! Very professional and timely.'
-      }
+    // Create reviews for completed bookings
+    const completedBookingRecords = await prisma.booking.findMany({
+      where: { status: 'COMPLETED' }
     });
+
+    for (const booking of completedBookingRecords) {
+      await prisma.review.create({
+        data: {
+          bookingId: booking.id,
+          customerId: booking.customerId,
+          rating: Math.floor(Math.random() * 2) + 4, // 4 or 5 stars
+          comment: 'Great service! Very professional and timely.'
+        }
+      });
+    }
   }
 
   console.log('Database seeded successfully!');
