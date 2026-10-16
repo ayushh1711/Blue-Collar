@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "cd client && npm install --include=dev && npm run build && cd ../server && npm install --include=dev && npx prisma generate",
-    "start": "cd server && npx prisma migrate deploy && node prisma/seed.js && node src/server.js",
+    "start": "cd server && node start.js",
     "server": "npm --prefix server run dev",
     "client": "npm --prefix client run dev"
   }
