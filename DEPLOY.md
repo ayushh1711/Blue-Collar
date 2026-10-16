@@ -13,7 +13,7 @@ You get:
 
 | Component | Platform | Purpose |
 | :--- | :--- | :--- |
-| **Database** | [Neon](https://neon.tech) | Free Serverless Cloud PostgreSQL *(Already Done!)* |
+| **Database** | [Neon](https://neon.tech) | Free Serverless Cloud PostgreSQL *(Already Created!)* |
 | **Full-Stack App** | [Render](https://render.com) | Express + Socket.io serving React Vite SPA |
 
 ---
@@ -31,12 +31,14 @@ You get:
    - **Runtime**: `Node`
    - **Build Command**:
      ```bash
-     npm run build
+     cd client && npm install && npm run build && cd ../server && npm install && npx prisma generate
      ```
+     *(or simply `npm run build`)*
    - **Start Command**:
      ```bash
-     npm start
+     cd server && npx prisma migrate deploy && node prisma/seed.js && node src/server.js
      ```
+     *(or simply `npm start`)*
    - **Instance Type**: `Free`
 
 5. Scroll down to **"Environment Variables"** and add:
@@ -50,13 +52,6 @@ You get:
    | `CLIENT_URL` | `*` |
 
 6. Click **"Create Web Service"**.
-
----
-
-## What Render will do automatically:
-1. Run `npm run build`: builds the React frontend with Vite into `client/dist`, installs server dependencies, and generates the Prisma client.
-2. Run `npm start`: applies the migrations to Neon (`prisma migrate deploy`), seeds the demo accounts & services (`node prisma/seed.js`), and starts Express.
-3. Express serves the React app and handles all `/api` endpoints and WebSockets on the exact same port!
 
 ---
 
