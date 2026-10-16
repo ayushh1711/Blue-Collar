@@ -53,10 +53,10 @@ const ReviewModal = ({ booking, onClose, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
-      <div className="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl animate-scale-in">
+      <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl animate-scale-in">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
+            <h2 className="text-2xl font-bold text-gray-900">
               Rate Your Experience
             </h2>
             <p className="text-sm text-gray-600 mt-1">
@@ -72,9 +72,9 @@ const ReviewModal = ({ booking, onClose, onSuccess }) => {
         </div>
 
         {/* Service and Provider Info */}
-        <div className="bg-gray-50 rounded-2xl p-4 mb-6">
+        <div className="bg-gray-50 rounded-xl p-4 mb-6">
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-brand-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold">
                 {booking.service.name.charAt(0)}
               </span>
@@ -90,7 +90,7 @@ const ReviewModal = ({ booking, onClose, onSuccess }) => {
         </div>
 
         {error && (
-          <div className="bg-red-50 border-2 border-red-200 text-red-700 p-4 rounded-xl mb-6 animate-slide-down">
+          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl mb-6 animate-slide-down">
             <p className="flex items-center">
               <span className="mr-2">⚠️</span>
               {error}
@@ -140,7 +140,7 @@ const ReviewModal = ({ booking, onClose, onSuccess }) => {
               Comment (Optional)
             </label>
             <textarea
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200 bg-white hover:border-primary-300 resize-none"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition bg-white resize-none"
               rows="4"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
@@ -153,7 +153,7 @@ const ReviewModal = ({ booking, onClose, onSuccess }) => {
           </div>
 
           {/* Buttons */}
-          <div className="flex items-center justify-end space-x-3 pt-6 border-t-2 border-gray-100">
+          <div className="flex items-center justify-end space-x-3 pt-6 border-t border-gray-100">
             <Button type="button" variant="ghost" onClick={onClose}>
               Cancel
             </Button>

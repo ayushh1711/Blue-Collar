@@ -1,5 +1,5 @@
 import prisma from '../config/database.js';
-import { io } from '../server.js';
+import { getIO } from '../config/socket.js';
 
 export const createBooking = async (req, res) => {
   try {
@@ -28,7 +28,7 @@ export const createBooking = async (req, res) => {
     res.status(201).json({ booking });
 
     // Notify all connected providers about the new booking request
-    io.emit('booking:new', booking);
+    getIO().emit('booking:new', booking);
   } catch (error) {
     res.status(500).json({ message: 'Failed to create booking', error: error.message });
   }
@@ -120,9 +120,9 @@ export const acceptBooking = async (req, res) => {
     res.json({ booking, message: 'Booking accepted' });
 
     // Notify the customer their booking was accepted
-    io.to(booking.customerId).emit('booking:updated', booking);
+    getIO().to(booking.customerId).emit('booking:updated', booking);
     // Notify all providers to refresh their list
-    io.emit('booking:updated', booking);
+    getIO().emit('booking:updated', booking);
   } catch (error) {
     res.status(500).json({ message: 'Failed to accept booking', error: error.message });
   }
@@ -140,8 +140,8 @@ export const rejectBooking = async (req, res) => {
     res.json({ booking, message: 'Booking rejected' });
 
     // Notify the customer their booking was rejected
-    io.to(booking.customerId).emit('booking:updated', booking);
-    io.emit('booking:updated', booking);
+    getIO().to(booking.customerId).emit('booking:updated', booking);
+    getIO().emit('booking:updated', booking);
   } catch (error) {
     res.status(500).json({ message: 'Failed to reject booking', error: error.message });
   }
@@ -171,8 +171,8 @@ export const updateBookingStatus = async (req, res) => {
     res.json({ booking, message: `Status updated to ${status}` });
 
     // Notify customer of status change
-    io.to(booking.customerId).emit('booking:updated', booking);
-    io.emit('booking:updated', booking);
+    getIO().to(booking.customerId).emit('booking:updated', booking);
+    getIO().emit('booking:updated', booking);
   } catch (error) {
     res.status(500).json({ message: 'Failed to update status', error: error.message });
   }

@@ -105,7 +105,7 @@ const ProviderDashboard = () => {
           </Card>
           <Card>
             <h3 className="text-lg font-semibold mb-2">Total Reviews</h3>
-            <p className="text-3xl font-bold text-primary-600">
+            <p className="text-3xl font-bold text-brand-600">
               {user?.providerProfile?.totalReviews || 0}
             </p>
           </Card>
@@ -123,7 +123,7 @@ const ProviderDashboard = () => {
 
         {loading ? (
           <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600"></div>
           </div>
         ) : (
           <>
@@ -151,7 +151,7 @@ const ProviderDashboard = () => {
                     onClick={() => setActiveTab('active')}
                     className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                       activeTab === 'active'
-                        ? 'border-primary-500 text-primary-600'
+                        ? 'border-brand-600 text-brand-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                     }`}
                   >
@@ -161,7 +161,7 @@ const ProviderDashboard = () => {
                     onClick={() => setActiveTab('history')}
                     className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                       activeTab === 'history'
-                        ? 'border-primary-500 text-primary-600'
+                        ? 'border-brand-600 text-brand-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                     }`}
                   >

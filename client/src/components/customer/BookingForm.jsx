@@ -78,10 +78,10 @@ const BookingForm = ({ onClose, onSuccess, preselectedService }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
-      <div className="bg-white rounded-3xl max-w-md w-full p-8 max-h-[90vh] overflow-y-auto shadow-2xl animate-scale-in">
+      <div className="bg-white rounded-2xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto shadow-xl animate-scale-in">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
+            <h2 className="text-2xl font-bold text-gray-900">
               Book a Service
             </h2>
             {preselectedService && (
@@ -99,7 +99,7 @@ const BookingForm = ({ onClose, onSuccess, preselectedService }) => {
         </div>
 
         {error && (
-          <div className="bg-red-50 border-2 border-red-200 text-red-700 p-4 rounded-xl mb-6 animate-slide-down">
+          <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl mb-6 animate-slide-down">
             <p className="flex items-center">
               <span className="mr-2">⚠️</span>
               {error}
@@ -113,9 +113,9 @@ const BookingForm = ({ onClose, onSuccess, preselectedService }) => {
               Service
             </label>
             {preselectedService ? (
-              <div className="w-full px-4 py-3 border-2 border-primary-200 bg-primary-50 rounded-xl flex items-center justify-between">
+              <div className="w-full px-4 py-3 border border-brand-200 bg-brand-50 rounded-xl flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center">
                     <span className="text-white font-bold text-sm">
                       {preselectedService.name.charAt(0)}
                     </span>
@@ -128,14 +128,14 @@ const BookingForm = ({ onClose, onSuccess, preselectedService }) => {
                 <button
                   type="button"
                   onClick={handleChangeService}
-                  className="text-primary-600 hover:text-primary-700 text-sm font-medium"
+                  className="text-brand-600 hover:text-brand-700 text-sm font-medium"
                 >
                   Change
                 </button>
               </div>
             ) : (
               <select
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200 bg-white hover:border-primary-300"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition bg-white"
                 value={formData.serviceId}
                 onChange={(e) => handleServiceChange(e.target.value)}
                 required
@@ -175,7 +175,7 @@ const BookingForm = ({ onClose, onSuccess, preselectedService }) => {
               Address
             </label>
             <textarea
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200 bg-white hover:border-primary-300"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition bg-white"
               rows="3"
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
@@ -184,10 +184,10 @@ const BookingForm = ({ onClose, onSuccess, preselectedService }) => {
             />
           </div>
 
-          <div className="flex items-center justify-between pt-6 border-t-2 border-gray-100">
+          <div className="flex items-center justify-between pt-6 border-t border-gray-100">
             <div>
-              <p className="text-sm text-gray-600 mb-1">Total Amount</p>
-              <p className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent flex items-center">
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Total Amount</p>
+              <p className="text-2xl font-bold text-gray-900 flex items-center">
                 ₹{formData.totalAmount}
               </p>
             </div>

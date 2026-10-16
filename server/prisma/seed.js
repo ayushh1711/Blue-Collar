@@ -42,6 +42,19 @@ async function main() {
     }
   });
 
+  // Create a test admin
+  const admin = await prisma.user.upsert({
+    where: { email: 'admin@test.com' },
+    update: {},
+    create: {
+      name: 'System Admin',
+      email: 'admin@test.com',
+      password: hashedPassword,
+      phone: '9999988888',
+      role: 'ADMIN'
+    }
+  });
+
   // Create a test provider
   const provider = await prisma.user.upsert({
     where: { email: 'provider@test.com' },
@@ -134,6 +147,7 @@ async function main() {
   console.log('Test accounts created:');
   console.log('Customer: customer@test.com / password123');
   console.log('Provider: provider@test.com / password123');
+  console.log('Admin:    admin@test.com / password123');
 }
 
 main()
