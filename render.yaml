@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: bluecollar
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        value: bluecollar_secret_jwt_key_2026_xyz_production
+      - key: JWT_EXPIRE
+        value: 7d
+      - key: CLIENT_URL
+        value: "*"
+      - key: DATABASE_URL
+        sync: false
