@@ -16,4 +16,4 @@ services:
       - key: CLIENT_URL
         value: "*"
       - key: DATABASE_URL
-        sync: false
+        value: postgresql://neondb_owner:npg_Y3FKcEvi2psy@ep-broad-resonance-a0ozhz29-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&connect_timeout=30
